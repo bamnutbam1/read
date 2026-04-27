@@ -1,1603 +1,382 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#1a0a00">
-<title>ครัวอ้อยอ้อย - ระบบรับออเดอร์</title>
-<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&family=Prompt:wght@400;600;700&display=swap" rel="stylesheet">
-<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-<style>
-:root {
-  --gold: #c9a84c;
-  --gold-light: #f0d080;
-  --dark: #0f0600;
-  --dark2: #1a0e04;
-  --dark3: #251508;
-  --card: #1e1005;
-  --card2: #2a1a08;
-  --text: #f5e6c8;
-  --text2: #c8a878;
-  --red: #c0392b;
-  --green: #27ae60;
-  --orange: #e67e22;
-  --border: #4a2e10;
-  --radius: 12px;
-  --shadow: 0 4px 20px rgba(0,0,0,0.6);
-}
-* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-body {
-  font-family: 'Sarabun', sans-serif;
-  background: var(--dark);
-  color: var(--text);
-  min-height: 100vh;
-  overflow-x: hidden;
-}
-.top-nav {
-  position: sticky; top: 0; z-index: 100;
-  background: linear-gradient(135deg, #1a0800, #2d1500);
-  border-bottom: 2px solid var(--gold);
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 10px 14px;
-  box-shadow: 0 2px 16px rgba(0,0,0,0.8);
-}
-.shop-name { font-family: 'Prompt', sans-serif; font-size: 16px; font-weight: 700; color: var(--gold); }
-.shop-sub { font-size: 10px; color: var(--text2); }
-.nav-btns { display: flex; gap: 8px; }
-.nav-btn {
-  background: var(--card2); border: 1px solid var(--border);
-  color: var(--text); font-size: 18px; width: 38px; height: 38px;
-  border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center;
-  transition: all 0.2s;
-}
-.nav-btn.kitchen-btn {
-  width: auto; padding: 0 10px; font-size: 14px; font-family: 'Prompt', sans-serif;
-  background: linear-gradient(135deg, #2980b9, #1c5982); color: #fff; border: none;
-}
-.nav-btn:active { transform: scale(0.92); background: var(--gold); color: var(--dark); }
-.badge {
-  position: absolute; top: -6px; right: -6px;
-  background: var(--red); color: #fff; font-size: 10px;
-  width: 18px; height: 18px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-weight: 700;
-}
-.btn-wrap { position: relative; }
-.page { display: none; padding: 12px; padding-bottom: 80px; }
-.page.active { display: block; }
-.input-section {
-  background: var(--card); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 12px; margin-bottom: 12px;
-}
-.section-title {
-  font-family: 'Prompt', sans-serif; font-weight: 600;
-  color: var(--gold); font-size: 14px; margin-bottom: 10px;
-  display: flex; align-items: center; gap: 6px;
-}
-.input-row { display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
-.inp {
-  flex: 1; min-width: 120px;
-  background: var(--dark2); border: 1px solid var(--border);
-  color: var(--text); font-family: 'Sarabun', sans-serif; font-size: 14px;
-  padding: 10px 12px; border-radius: 8px; outline: none;
-  transition: border-color 0.2s;
-}
-.inp:focus { border-color: var(--gold); }
-.inp::placeholder { color: #6b4a28; }
-select.inp { cursor: pointer; }
-.inp-sm { flex: 0 0 80px; }
-.inp-xs { flex: 0 0 60px; }
-.suggest-box {
-  position: absolute; z-index: 200; left: 0; right: 0; top: 100%;
-  background: var(--card2); border: 1px solid var(--gold);
-  border-radius: 8px; overflow: hidden;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.8);
-  max-height: 220px; overflow-y: auto;
-}
-.suggest-item {
-  padding: 10px 14px; cursor: pointer; font-size: 13px;
-  display: flex; justify-content: space-between; align-items: center;
-  border-bottom: 1px solid var(--border);
-  transition: background 0.15s;
-}
-.suggest-item:last-child { border-bottom: none; }
-.suggest-item:active, .suggest-item:hover { background: var(--dark3); }
-.suggest-price { color: var(--gold); font-weight: 600; font-size: 12px; }
-.suggest-cat { color: var(--text2); font-size: 11px; }
-.inp-wrap { position: relative; flex: 1; min-width: 120px; }
-.add-btn {
-  width: 100%; padding: 12px;
-  background: linear-gradient(135deg, var(--gold), #a07830);
-  color: var(--dark); font-family: 'Prompt', sans-serif; font-weight: 700;
-  font-size: 15px; border: none; border-radius: 8px; cursor: pointer;
-  transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px;
-}
-.add-btn:active { transform: scale(0.97); }
-.order-card {
-  background: var(--card); border: 1px solid var(--border);
-  border-radius: var(--radius); margin-bottom: 8px; overflow: hidden;
-}
-.order-item {
-  display: flex; align-items: center; gap: 10px;
-  padding: 10px 12px; border-bottom: 1px solid var(--border);
-  animation: slideIn 0.2s ease;
-}
-@keyframes slideIn {
-  from { opacity: 0; transform: translateX(-10px); }
-  to { opacity: 1; transform: translateX(0); }
-}
-.order-item:last-child { border-bottom: none; }
-.item-name { flex: 1; font-size: 13px; font-weight: 600; }
-.item-note { font-size: 11px; color: var(--text2); }
-.item-type { font-size: 11px; color: var(--orange); }
-.item-qty {
-  display: flex; align-items: center; gap: 6px;
-  background: var(--dark2); border-radius: 6px; padding: 4px;
-}
-.qty-btn {
-  background: var(--card2); border: 1px solid var(--border);
-  color: var(--text); width: 28px; height: 28px;
-  border-radius: 4px; font-size: 16px; cursor: pointer; font-weight: 700;
-  display: flex; align-items: center; justify-content: center; transition: all 0.15s;
-}
-.qty-btn:active { background: var(--gold); color: var(--dark); }
-.qty-num { font-size: 14px; font-weight: 700; min-width: 22px; text-align: center; }
-.item-price { font-weight: 700; color: var(--gold); font-size: 14px; min-width: 50px; text-align: right; }
-.del-btn {
-  background: rgba(192,57,43,0.2); border: 1px solid rgba(192,57,43,0.4);
-  color: var(--red); width: 28px; height: 28px;
-  border-radius: 4px; cursor: pointer; font-size: 14px;
-  display: flex; align-items: center; justify-content: center; transition: all 0.15s;
-}
-.del-btn:active { background: var(--red); color: #fff; }
-.summary-bar {
-  position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
-  background: linear-gradient(135deg, #1a0800, #2d1500);
-  border-top: 2px solid var(--gold);
-  padding: 10px 14px;
-  display: flex; align-items: center; gap: 10px;
-  box-shadow: 0 -4px 20px rgba(0,0,0,0.6);
-}
-.total-box { flex: 1; }
-.total-label { font-size: 11px; color: var(--text2); }
-.total-amount { font-family: 'Prompt', sans-serif; font-size: 20px; font-weight: 700; color: var(--gold-light); }
-.print-btn {
-  background: linear-gradient(135deg, #2980b9, #1c5982);
-  color: #fff; border: none; border-radius: 8px; padding: 10px 18px;
-  font-family: 'Prompt', sans-serif; font-weight: 700; font-size: 14px;
-  cursor: pointer; transition: all 0.2s;
-  display: flex; align-items: center; gap: 6px; justify-content: center;
-}
-.print-btn:active { transform: scale(0.95); }
-.clear-btn {
-  background: var(--card2); border: 1px solid var(--border);
-  color: var(--text2); border-radius: 8px; padding: 10px 12px;
-  font-size: 14px; cursor: pointer; transition: all 0.2s;
-}
-.clear-btn:active { background: var(--red); color: #fff; }
-.table-row { display: flex; gap: 8px; margin-bottom: 10px; }
-.table-inp {
-  background: var(--dark2); border: 1px solid var(--gold);
-  color: var(--gold-light); font-family: 'Prompt', sans-serif; font-weight: 700; font-size: 16px;
-  padding: 10px 12px; border-radius: 8px; outline: none; flex: 1; text-align: center;
-}
-.cat-tabs {
-  display: flex; gap: 6px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 10px;
-  scrollbar-width: none;
-}
-.cat-tabs::-webkit-scrollbar { display: none; }
-.cat-tab {
-  flex: 0 0 auto; padding: 7px 14px;
-  background: var(--card2); border: 1px solid var(--border);
-  color: var(--text2); border-radius: 20px; font-size: 12px;
-  cursor: pointer; transition: all 0.2s; white-space: nowrap;
-  font-family: 'Sarabun', sans-serif;
-}
-.cat-tab.active {
-  background: var(--gold); color: var(--dark); font-weight: 700; border-color: var(--gold);
-}
-.menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.menu-card {
-  background: var(--card); border: 1px solid var(--border);
-  border-radius: 10px; padding: 10px; cursor: pointer;
-  transition: all 0.2s; position: relative; overflow: hidden;
-}
-.menu-card::before {
-  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-  background: linear-gradient(90deg, var(--gold), transparent);
-}
-.menu-card:active { transform: scale(0.96); background: var(--card2); }
-.menu-card-name { font-size: 12px; font-weight: 600; margin-bottom: 4px; }
-.menu-card-cat { font-size: 10px; color: var(--text2); margin-bottom: 6px; }
-.menu-card-price {
-  font-family: 'Prompt', sans-serif; font-size: 16px; font-weight: 700; color: var(--gold);
-}
-.menu-card-multi { font-size: 10px; color: var(--text2); }
-.add-icon {
-  position: absolute; top: 8px; right: 8px;
-  width: 22px; height: 22px; background: var(--gold);
-  border-radius: 50%; display: flex; align-items: center; justify-content: center;
-  color: var(--dark); font-size: 14px; font-weight: 700;
-}
-.hist-card {
-  background: var(--card); border: 1px solid var(--border);
-  border-radius: var(--radius); margin-bottom: 10px; padding: 12px;
-}
-.hist-header {
-  display: flex; justify-content: space-between; align-items: flex-start;
-  margin-bottom: 8px;
-}
-.hist-table { font-weight: 700; color: var(--gold); font-size: 14px; }
-.hist-time { font-size: 11px; color: var(--text2); }
-.hist-total { font-family: 'Prompt', sans-serif; font-size: 18px; font-weight: 700; color: var(--gold-light); }
-.hist-items { font-size: 12px; color: var(--text2); line-height: 1.8; }
-.hist-actions { display: flex; gap: 6px; margin-top: 10px; }
-.hist-btn {
-  flex: 1; padding: 8px; border-radius: 6px; font-size: 12px;
-  cursor: pointer; border: 1px solid var(--border); background: var(--card2); color: var(--text);
-  font-family: 'Sarabun', sans-serif; transition: all 0.15s;
-}
-.hist-btn:active { background: var(--gold); color: var(--dark); }
-.hist-btn.danger:active { background: var(--red); color: #fff; }
-.settings-section {
-  background: var(--card); border: 1px solid var(--border);
-  border-radius: var(--radius); margin-bottom: 12px; overflow: hidden;
-}
-.settings-header {
-  background: var(--card2); padding: 10px 14px;
-  font-family: 'Prompt', sans-serif; font-weight: 600; font-size: 13px;
-  color: var(--gold); border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; gap: 6px;
-}
-.settings-row {
-  padding: 10px 14px; border-bottom: 1px solid var(--border);
-  display: flex; flex-direction: column; gap: 6px;
-}
-.settings-row:last-child { border-bottom: none; }
-.settings-label { font-size: 12px; color: var(--text2); }
-.settings-inp {
-  background: var(--dark2); border: 1px solid var(--border);
-  color: var(--text); font-family: 'Sarabun', sans-serif; font-size: 13px;
-  padding: 8px 10px; border-radius: 6px; outline: none; width: 100%;
-}
-.settings-inp:focus { border-color: var(--gold); }
-.toggle-row {
-  padding: 10px 14px; border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: space-between;
-}
-.toggle-row:last-child { border-bottom: none; }
-.toggle-label { font-size: 13px; }
-.toggle {
-  width: 46px; height: 26px; background: var(--border); border-radius: 13px;
-  position: relative; cursor: pointer; transition: background 0.3s;
-}
-.toggle.on { background: var(--gold); }
-.toggle::after {
-  content: ''; position: absolute; width: 20px; height: 20px;
-  background: #fff; border-radius: 50%; top: 3px; left: 3px;
-  transition: transform 0.3s; box-shadow: 0 2px 6px rgba(0,0,0,0.4);
-}
-.toggle.on::after { transform: translateX(20px); }
-.save-btn {
-  width: 100%; padding: 13px; background: linear-gradient(135deg, var(--gold), #a07830);
-  color: var(--dark); font-family: 'Prompt', sans-serif; font-weight: 700;
-  font-size: 15px; border: none; border-radius: 8px; cursor: pointer;
-  margin-top: 10px; transition: all 0.2s;
-}
-.save-btn:active { transform: scale(0.97); }
-.menu-edit-item {
-  padding: 10px 14px; border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; gap: 8px;
-}
-.menu-edit-item:last-child { border-bottom: none; }
-.menu-edit-name { flex: 1; font-size: 13px; }
-.menu-edit-price { color: var(--gold); font-weight: 700; min-width: 40px; font-size: 13px; }
-.menu-del-btn {
-  background: rgba(192,57,43,0.2); border: 1px solid rgba(192,57,43,0.4);
-  color: var(--red); width: 26px; height: 26px; border-radius: 4px;
-  cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center;
-}
-.add-menu-row { display: flex; gap: 6px; padding: 10px 14px; background: var(--dark3); }
-.add-menu-inp {
-  flex: 1; background: var(--dark2); border: 1px solid var(--border);
-  color: var(--text); padding: 8px 10px; border-radius: 6px; font-family: 'Sarabun'; font-size: 13px; outline: none;
-}
-.add-menu-btn {
-  background: var(--gold); color: var(--dark); border: none; border-radius: 6px;
-  padding: 8px 12px; font-weight: 700; cursor: pointer; font-size: 13px;
-}
-.modal-overlay {
-  display: none; position: fixed; inset: 0; z-index: 500;
-  background: rgba(0,0,0,0.85); align-items: center; justify-content: center;
-  padding: 16px;
-}
-.modal-overlay.open { display: flex; }
-.modal-box {
-  background: var(--dark2); border: 1px solid var(--gold);
-  border-radius: 16px; padding: 20px; width: 100%; max-width: 360px;
-  max-height: 90vh; overflow-y: auto; position: relative;
-  animation: zoomIn 0.2s ease;
-}
-@keyframes zoomIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-.modal-title {
-  font-family: 'Prompt', sans-serif; font-size: 16px; font-weight: 700;
-  color: var(--gold); margin-bottom: 14px; text-align: center;
-}
-.modal-close {
-  position: absolute; top: 14px; right: 14px;
-  background: var(--card2); border: 1px solid var(--border);
-  color: var(--text); width: 32px; height: 32px; border-radius: 8px;
-  cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center;
-}
-.preview-img-container {
-  text-align: center;
-  background: #f0f0f0;
-  padding: 10px;
-  border-radius: 4px;
-  max-height: 50vh;
-  overflow-y: auto;
-}
-.preview-img-container img { max-width: 100%; height: auto; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
-#receipt-capture-area { position: absolute; top: -9999px; left: -9999px; }
-.receipt-preview {
-  background: #fff; color: #000; font-family: 'Sarabun', sans-serif;
-  padding: 16px; font-size: 14px; line-height: 1.6;
-  width: 384px; box-sizing: border-box; margin: 0;
-}
-/* ===== KITCHEN PAGE ===== */
-.kitchen-card {
-  background: var(--card2);
-  border: 2px solid var(--gold);
-  border-radius: 16px;
-  padding: 20px;
-  margin-bottom: 16px;
-  position: relative;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.8);
-  animation: slideIn 0.3s ease;
-}
-.kitchen-qty {
-  font-size: 52px;
-  font-weight: bold;
-  color: var(--gold-light);
-  text-align: center;
-  font-family: 'Prompt', sans-serif;
-  margin: 4px 0;
-}
-/* copy flash animation */
-@keyframes copyFlash {
-  0%   { background: var(--green); color: #fff; }
-  100% { background: var(--card2); color: var(--text2); }
-}
-.copy-flash { animation: copyFlash 0.6s ease forwards; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>อ่านออเดอร์ครัว - Text to Speech</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #121212;
+            --surface: #1e1e1e;
+            --primary: #4ade80; /* Green */
+            --primary-dark: #22c55e;
+            --danger: #f87171;
+            --text: #f3f4f6;
+            --text-muted: #9ca3af;
+        }
 
-@media print {
-  body > *:not(#receipt-print) { display: none !important; }
-  #receipt-print {
-    display: block !important; position: fixed; top: 0; left: 0; width: 58mm;
-    font-family: 'Courier New', monospace; font-size: 10px;
-    color: #000 !important; background: #fff !important; padding: 4mm; margin: 0;
-  }
-}
-#receipt-print { display: none; font-family: 'Courier New', monospace; font-size: 11px; color: #222; line-height: 1.5; }
-.bottom-nav {
-  position: fixed; bottom: 0; left: 0; right: 0; z-index: 99;
-  background: var(--dark2); border-top: 1px solid var(--border);
-  display: flex; justify-content: space-around;
-}
-.bottom-tab {
-  flex: 1; padding: 10px 4px 8px;
-  display: flex; flex-direction: column; align-items: center; gap: 3px;
-  cursor: pointer; transition: all 0.2s; border: none; background: transparent;
-  color: var(--text2); font-family: 'Sarabun', sans-serif; font-size: 10px;
-}
-.bottom-tab .tab-icon { font-size: 20px; }
-.bottom-tab.active { color: var(--gold); }
-.bottom-tab.active .tab-icon { transform: translateY(-2px); }
-.toast {
-  position: fixed; top: 70px; left: 50%; transform: translateX(-50%);
-  background: var(--green); color: #fff; padding: 10px 20px;
-  border-radius: 20px; font-size: 13px; font-weight: 600; z-index: 9999;
-  opacity: 0; transition: opacity 0.3s; pointer-events: none;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
-}
-.toast.show { opacity: 1; }
-.toast.error { background: var(--red); }
-.empty-state { text-align: center; padding: 40px 20px; color: var(--text2); }
-.empty-icon { font-size: 48px; margin-bottom: 10px; }
-.empty-text { font-size: 14px; }
-.chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
-.chip {
-  padding: 4px 10px; border-radius: 12px; font-size: 11px;
-  background: var(--card2); border: 1px solid var(--border); cursor: pointer;
-  transition: all 0.15s;
-}
-.chip.active { background: var(--gold); color: var(--dark); border-color: var(--gold); font-weight: 700; }
-.chip:active { transform: scale(0.95); }
-.tag-row { display: flex; gap: 4px; flex-wrap: wrap; align-items: center; margin-bottom: 8px; }
-.tag { background: var(--dark3); border: 1px solid var(--border); color: var(--text2); font-size: 10px; padding: 2px 8px; border-radius: 10px; }
-.sheet-status {
-  display: inline-flex; align-items: center; gap: 4px;
-  font-size: 11px; padding: 4px 10px; border-radius: 10px;
-}
-.sheet-status.ok { background: rgba(39,174,96,0.2); color: var(--green); border: 1px solid rgba(39,174,96,0.3); }
-.sheet-status.err { background: rgba(192,57,43,0.2); color: var(--red); border: 1px solid rgba(192,57,43,0.4); }
-.sheet-status.pending { background: rgba(230,126,34,0.2); color: var(--orange); border: 1px solid rgba(230,126,34,0.3); }
-.channel-btn {
-  flex: 1; padding: 10px 6px;
-  background: var(--card2); border: 1px solid var(--border);
-  color: var(--text2); border-radius: 8px; font-size: 13px;
-  font-family: 'Sarabun', sans-serif; cursor: pointer; transition: all 0.2s; font-weight: 600;
-}
-.channel-btn.active { background: linear-gradient(135deg, var(--gold), #a07830); color: var(--dark); border-color: var(--gold); }
-.channel-btn:active { transform: scale(0.95); }
-.discount-row { display: flex; gap: 8px; align-items: center; }
-.discount-val { font-family: 'Prompt', sans-serif; font-size: 14px; font-weight: 700; }
-</style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Prompt', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            padding: 20px;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            flex: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        /* กล่องข้อความ */
+        .text-box {
+            width: 100%;
+            flex: 1;
+            min-height: 250px;
+            background-color: var(--surface);
+            color: var(--text);
+            border: 2px solid #333;
+            border-radius: 16px;
+            padding: 20px;
+            font-family: 'Prompt', sans-serif;
+            font-size: 22px;
+            line-height: 1.6;
+            resize: none;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .text-box:focus {
+            border-color: var(--primary);
+        }
+
+        .text-box::placeholder {
+            color: #555;
+            text-align: center;
+            padding-top: 20%;
+        }
+
+        /* แถบเครื่องมือ */
+        .toolbar {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 12px;
+            padding: 15px;
+            font-family: 'Prompt', sans-serif;
+            font-size: 18px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: transform 0.1s, filter 0.2s;
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        .btn-paste {
+            background-color: #374151;
+            color: white;
+        }
+        
+        .btn-clear {
+            background-color: rgba(248, 113, 113, 0.2);
+            color: var(--danger);
+            border: 1px solid rgba(248, 113, 113, 0.4);
+        }
+
+        /* ปุ่มเล่นเสียงยักษ์ */
+        .play-container {
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+
+        .btn-play {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            color: #000;
+            font-size: 32px;
+            font-weight: 700;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(74, 222, 128, 0.3);
+        }
+
+        .btn-play.playing {
+            background: linear-gradient(135deg, #ef4444, #f87171);
+            color: white;
+            box-shadow: 0 8px 25px rgba(239, 68, 68, 0.3);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        /* การตั้งค่า */
+        .settings {
+            background-color: var(--surface);
+            padding: 15px 20px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .settings label {
+            font-size: 18px;
+            white-space: nowrap;
+        }
+
+        input[type="range"] {
+            flex: 1;
+            accent-color: var(--primary);
+            height: 8px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background-color: #333;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 16px;
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+    </style>
 </head>
 <body>
 
-<!-- TOP NAV -->
-<div class="top-nav">
-  <div>
-    <div class="shop-name">🍳 ครัวอ้อยอ้อย</div>
-    <div class="shop-sub" id="nav-sub">โทร. 080-9650875</div>
-  </div>
-  <div class="nav-btns">
-    <button class="nav-btn kitchen-btn" onclick="showPage('kitchen')">👨‍🍳 ครัว</button>
-    <div class="btn-wrap">
-      <button class="nav-btn" onclick="showPage('cart')">🛒
-        <span class="badge" id="cart-badge" style="display:none">0</span>
-      </button>
-    </div>
-    <button class="nav-btn" onclick="showPage('settings')">⚙️</button>
-  </div>
-</div>
-
-<!-- ORDER PAGE -->
-<div class="page active" id="page-order">
-  <div class="input-section">
-    <div class="section-title">📲 ช่องทางสั่ง &amp; ลูกค้า</div>
-    <div style="display:flex;gap:8px;margin-bottom:10px">
-      <button class="channel-btn active" id="ch-line" onclick="setChannel('line',this)">💬 ไลน์</button>
-      <button class="channel-btn" id="ch-phone" onclick="setChannel('phone',this)">📞 โทรศัพท์</button>
-      <button class="channel-btn" id="ch-walkin" onclick="setChannel('walkin',this)">🏪 หน้าร้าน</button>
-    </div>
-    <input class="table-inp" id="customer-name" placeholder="ชื่อ / เบอร์ลูกค้า" type="text" style="width:100%;font-size:14px">
-  </div>
-
-  <div class="input-section">
-    <div class="section-title">✏️ พิมพ์ / วางออเดอร์</div>
-    <div class="input-row">
-      <div class="inp-wrap">
-        <input class="inp" id="item-search" placeholder="ชื่อเมนู..." autocomplete="off"
-          oninput="onMenuSearch(this.value)" onpaste="handlePaste(event)">
-        <div class="suggest-box" id="suggest-box" style="display:none"></div>
-      </div>
-    </div>
-    <div class="input-row" id="type-row" style="display:none">
-      <div class="chips" id="type-chips"></div>
-    </div>
-    <div class="input-row">
-      <input class="inp inp-xs" id="item-qty" type="number" value="1" min="1" placeholder="จำนวน">
-      <input class="inp" id="item-note" placeholder="หมายเหตุ (เช่น เผ็ดน้อย...)" type="text">
-    </div>
-    <div class="input-row" style="align-items: center;">
-      <input class="inp inp-sm" id="item-price" type="number" placeholder="ราคา" step="5">
-      <div class="chip" id="chip-special" onclick="toggleItemSpecial()">⭐ พิเศษ (+10)</div>
-      <div style="flex:1">
-        <div class="tag-row" id="recent-tags"></div>
-      </div>
-    </div>
-    <button class="add-btn" onclick="addItem()">➕ เพิ่มรายการ</button>
-  </div>
-
-  <div id="paste-preview" style="display:none">
-    <div class="input-section">
-      <div class="section-title">📋 รายการจากคลิปบอร์ด</div>
-      <div id="paste-items"></div>
-      <div style="display:flex;gap:8px;margin-top:8px">
-        <button class="add-btn" style="background:linear-gradient(135deg,var(--green),#1a7a40)" onclick="confirmPaste()">✅ เพิ่มทั้งหมด</button>
-        <button class="add-btn" style="background:var(--card2);color:var(--text)" onclick="cancelPaste()">❌ ยกเลิก</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="order-list">
-    <div class="empty-state">
-      <div class="empty-icon">🍽️</div>
-      <div class="empty-text">ยังไม่มีรายการ<br>พิมพ์หรือวางออเดอร์เพื่อเริ่มต้น</div>
-    </div>
-  </div>
-</div>
-
-<!-- MENU BROWSER PAGE -->
-<div class="page" id="page-menu">
-  <div class="cat-tabs" id="cat-tabs"></div>
-  <div class="menu-grid" id="menu-grid"></div>
-</div>
-
-<!-- ==================== KITCHEN PAGE ==================== -->
-<div class="page" id="page-kitchen">
-  <div class="input-section" style="border:none;background:transparent;padding:0;">
-
-    <!-- หัว + สวิตช์อ่านออกเสียง -->
-    <div class="section-title" style="justify-content:space-between;font-size:18px;margin-bottom:10px;">
-      <span>👨‍🍳 คิวอาหาร</span>
-      <div style="display:flex;align-items:center;gap:8px;">
-        <span style="font-size:12px;color:var(--text2);">อ่าน Auto</span>
-        <div class="toggle" id="auto-speak-toggle" onclick="toggleAutoSpeak(this)"></div>
-      </div>
-    </div>
-
-    <!-- ปุ่มคัดลอกทั้งหมด (ซ่อนตอนไม่มีออเดอร์) -->
-    <button id="copy-all-btn" onclick="copyAllOrders()"
-      style="display:none;width:100%;margin-bottom:14px;padding:14px;
-             background:linear-gradient(135deg,#1a5276,#0d2d45);
-             color:#fff;border:none;border-radius:12px;
-             font-family:'Prompt',sans-serif;font-size:16px;font-weight:700;
-             cursor:pointer;align-items:center;justify-content:center;gap:10px;">
-      📋 คัดลอกออเดอร์ทั้งหมด
-    </button>
-
-    <!-- รายการอาหาร -->
-    <div id="kitchen-items"></div>
-
-  </div>
-</div>
-
-<!-- CART / RECEIPT PAGE -->
-<div class="page" id="page-cart">
-  <div class="input-section">
-    <div class="section-title">🧾 ใบเสร็จ / พริ้นกระดาษ</div>
-    <div class="table-row">
-      <div style="flex:1">
-        <div class="settings-label">ช่องทาง: <strong id="rcpt-table">-</strong></div>
-        <div class="settings-label">ลูกค้า: <strong id="rcpt-customer">-</strong></div>
-      </div>
-      <div>
-        <div class="settings-label">เวลา: <strong id="rcpt-time">-</strong></div>
-        <div class="settings-label">ออเดอร์: <strong id="rcpt-id">-</strong></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="input-section">
-    <div class="section-title">💰 สรุปยอด</div>
-    <div id="rcpt-items" style="margin-bottom:10px"></div>
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-top:1px solid var(--border)">
-      <span style="color:var(--text2)">ยอดรวม</span>
-      <span style="font-size:18px;font-weight:700;color:var(--gold-light)" id="rcpt-subtotal">฿0</span>
-    </div>
-    <div class="discount-row" style="margin-bottom:8px">
-      <span style="color:var(--text2);font-size:13px">ส่วนลด</span>
-      <input class="inp inp-xs" id="discount-inp" type="number" value="0" min="0" placeholder="0" style="width:70px" oninput="calcTotal()">
-      <span style="color:var(--text2);font-size:13px">บาท</span>
-      <span class="discount-val" id="discount-show" style="color:var(--red);"></span>
-    </div>
-    <div class="discount-row" style="margin-bottom:8px">
-      <span style="color:var(--text2);font-size:13px">จ่ายเพิ่ม</span>
-      <input class="inp inp-xs" id="extra-inp" type="number" value="0" min="0" placeholder="0" style="width:70px" oninput="calcTotal()">
-      <span style="color:var(--text2);font-size:13px">บาท</span>
-      <span class="discount-val" id="extra-show" style="color:var(--green);"></span>
-    </div>
-    <div style="border-top:2px solid var(--gold);margin-top:8px"></div>
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0">
-      <span style="font-size:16px;font-weight:700">ยอดสุทธิ</span>
-      <span style="font-family:'Prompt';font-size:24px;font-weight:700;color:var(--gold-light)" id="rcpt-total">฿0</span>
-    </div>
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0">
-      <span style="color:var(--text2);font-size:13px">รับเงิน</span>
-      <input class="inp" id="cash-inp" type="number" placeholder="ใส่จำนวนเงิน" style="width:130px;text-align:right" oninput="calcChange()">
-    </div>
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0">
-      <span style="color:var(--text2);font-size:13px">เงินทอน</span>
-      <span style="font-size:18px;font-weight:700;color:var(--green)" id="change-show">-</span>
-    </div>
-  </div>
-
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
-    <button class="print-btn" onclick="showPreview()" style="border-radius:8px;width:100%">👁️ ดูตัวอย่าง &amp; พริ้น</button>
-    <button class="add-btn" onclick="saveOrder()" style="background:linear-gradient(135deg,var(--green),#1a7a40)">💾 บันทึกส่งครัว</button>
-  </div>
-  <button class="add-btn" onclick="saveToSheet()" style="background:linear-gradient(135deg,#1a5276,#0d2d45);margin-bottom:8px">
-    📊 บันทึกลง Google Sheet
-  </button>
-  <div id="sheet-status-row" style="text-align:center;margin-top:4px"></div>
-</div>
-
-<!-- HISTORY PAGE -->
-<div class="page" id="page-history">
-  <div id="history-list">
-    <div class="empty-state">
-      <div class="empty-icon">📜</div>
-      <div class="empty-text">ยังไม่มีประวัติออเดอร์</div>
-    </div>
-  </div>
-</div>
-
-<!-- SETTINGS PAGE -->
-<div class="page" id="page-settings">
-  <div class="settings-section">
-    <div class="settings-header">🏪 ตั้งค่าร้าน</div>
-    <div class="settings-row"><div class="settings-label">โลโก้ร้าน (URL รูปภาพ)</div><input class="settings-inp" id="s-logourl" placeholder="https://..."></div>
-    <div class="settings-row"><div class="settings-label">ชื่อร้าน</div><input class="settings-inp" id="s-shopname" value="ครัวอ้อยอ้อย"></div>
-    <div class="settings-row"><div class="settings-label">เบอร์โทร</div><input class="settings-inp" id="s-phone" value="080-9650875"></div>
-    <div class="settings-row"><div class="settings-label">Line ID</div><input class="settings-inp" id="s-line" value="OIlshop2024"></div>
-    <div class="settings-row"><div class="settings-label">คำอวยพร (ท้ายบิล)</div><input class="settings-inp" id="s-footer" value="ขอบคุณที่ใช้บริการ 🙏 ส่งฟรี 2 กม."></div>
-  </div>
-
-  <div class="settings-section">
-    <div class="settings-header">📊 Google Sheet</div>
-    <div class="settings-row">
-      <div class="settings-label">Google Sheet URL (Apps Script)</div>
-      <input class="settings-inp" id="s-sheet-url" placeholder="https://script.google.com/macros/s/...">
-    </div>
-    <div class="settings-row">
-      <div class="settings-label">Sheet Name</div>
-      <input class="settings-inp" id="s-sheet-name" value="Orders" placeholder="Orders">
-    </div>
-    <div class="toggle-row">
-      <span class="toggle-label">บันทึก Sheet อัตโนมัติหลังพริ้น</span>
-      <div class="toggle" id="auto-sheet-toggle" onclick="this.classList.toggle('on')"></div>
-    </div>
-  </div>
-
-  <div class="settings-section">
-    <div class="settings-header">🖨️ ตั้งค่าพริ้น</div>
-    <div class="toggle-row">
-      <span class="toggle-label">แสดง QR Code ท้ายบิล</span>
-      <div class="toggle on" id="qr-toggle" onclick="this.classList.toggle('on')"></div>
-    </div>
-    <div class="toggle-row">
-      <span class="toggle-label">แสดงลำดับรายการ</span>
-      <div class="toggle on" id="num-toggle" onclick="this.classList.toggle('on')"></div>
-    </div>
-    <div class="settings-row">
-      <div class="settings-label">PromptPay เลข</div>
-      <input class="settings-inp" id="s-promptpay" placeholder="080-9650875">
-    </div>
-  </div>
-
-  <div class="settings-section">
-    <div class="settings-header">📡 เครื่องพิมพ์บูลทูธ 58mm</div>
-    <div class="settings-row">
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="add-btn" onclick="connectBluetooth()" id="bt-connect-btn" style="flex:1;font-size:13px;padding:10px">📡 เชื่อมต่อ Bluetooth</button>
-        <button class="add-btn" onclick="disconnectBluetooth()" id="bt-disconnect-btn" style="flex:1;font-size:13px;padding:10px;display:none;background:linear-gradient(135deg,var(--red),#8b1a10)">❌ ตัดการเชื่อมต่อ</button>
-      </div>
-      <div id="bt-status" style="margin-top:8px;font-size:12px;color:var(--text2);text-align:center">⚪ ยังไม่ได้เชื่อมต่อ</div>
-    </div>
-  </div>
-
-  <div class="settings-section">
-    <div class="settings-header">📋 จัดการเมนู</div>
-    <div id="menu-cat-list"></div>
-    <div style="padding:10px 14px">
-      <select class="settings-inp" id="new-menu-cat">
-        <option value="แนะนำ">เมนูแนะนำ</option>
-        <option value="จานด่วน">จานด่วน</option>
-        <option value="อื่นๆ">อื่นๆ</option>
-      </select>
-    </div>
-    <div class="add-menu-row">
-      <input class="add-menu-inp" id="new-menu-name" placeholder="ชื่อเมนูใหม่">
-      <input class="add-menu-inp" id="new-menu-price" type="number" placeholder="ราคา" style="width:70px">
-      <button class="add-menu-btn" onclick="addMenuManual()">+</button>
-    </div>
-  </div>
-
-  <button class="save-btn" onclick="saveSettings()">💾 บันทึกการตั้งค่า</button>
-</div>
-
-<!-- PREVIEW MODAL -->
-<div id="preview-modal" class="modal-overlay">
-  <div class="modal-box">
-    <button class="modal-close" onclick="closePreview()">✕</button>
-    <div class="modal-title">👁️ ตัวอย่างใบเสร็จ</div>
-    <div id="preview-content" class="preview-img-container"></div>
-    <div style="display:flex;gap:8px;margin-top:16px;">
-      <button class="print-btn" style="flex:1;justify-content:center;padding:14px;border-radius:8px;" onclick="executePrintImage()">
-        🖨️ พิมพ์ออกเครื่อง Bluetooth
-      </button>
-    </div>
-  </div>
-</div>
-
-<div id="receipt-capture-area">
-  <div id="receipt-content-to-capture" class="receipt-preview"></div>
-</div>
-
-<!-- BOTTOM NAV -->
-<div class="bottom-nav">
-  <button class="bottom-tab active" id="tab-order" onclick="showPage('order')">
-    <span class="tab-icon">✏️</span>รับออเดอร์
-  </button>
-  <button class="bottom-tab" id="tab-menu" onclick="showPage('menu')">
-    <span class="tab-icon">📖</span>เมนู
-  </button>
-  <button class="bottom-tab" id="tab-cart" onclick="showPage('cart')">
-    <span class="tab-icon">🧾</span>ใบเสร็จ
-  </button>
-  <button class="bottom-tab" id="tab-history" onclick="showPage('history')">
-    <span class="tab-icon">📜</span>ประวัติ
-  </button>
-  <button class="bottom-tab" id="tab-settings" onclick="showPage('settings')">
-    <span class="tab-icon">⚙️</span>ตั้งค่า
-  </button>
-</div>
-
-<div class="toast" id="toast"></div>
-<div id="receipt-print"></div>
-
-<script>
-// ============================================================
-// DATA
-// ============================================================
-let settings = {
-  shopname: 'ครัวอ้อยอ้อย', phone: '080-9650875', line: 'OIlshop2024',
-  footer: 'ขอบคุณที่ใช้บริการ 🙏 ส่งฟรี 2 กม.',
-  sheetUrl: '', sheetName: 'Orders', promptpay: '0809650875',
-  autoSheet: false, qrCode: true, showNum: true, logoUrl: '', autoSpeak: true
-};
-
-let menuData = [
-  { id:1,  name:'กะเพราหมูกรอบ',       price:65, cat:'แนะนำ',  types:[] },
-  { id:2,  name:'กะเพราทะเล',           price:65, cat:'แนะนำ',  types:[] },
-  { id:3,  name:'กะเพราเนื้อ',          price:60, cat:'แนะนำ',  types:[] },
-  { id:4,  name:'หมูกระเทียม',          price:50, cat:'แนะนำ',  types:[] },
-  { id:5,  name:'ผัดผงกะหรี่ทะเล',     price:65, cat:'แนะนำ',  types:[] },
-  { id:6,  name:'ผัดฉ่าทะเล',           price:65, cat:'แนะนำ',  types:[] },
-  { id:7,  name:'คะน้าปลากะป๋อง',      price:55, cat:'แนะนำ',  types:[] },
-  { id:8,  name:'ผัดคะน้าหมูกรอบ',     price:60, cat:'แนะนำ',  types:[] },
-  { id:9,  name:'ผักบุ้งหมูกรอบ',      price:60, cat:'แนะนำ',  types:[] },
-  { id:10, name:'ข้าวไข่เจียวหมูสับ',  price:40, cat:'แนะนำ',  types:[] },
-  { id:11, name:'ข้าวไข่เจียวทรงเครื่อง', price:40, cat:'แนะนำ', types:[] },
-  { id:12, name:'หมูกรอบคั่วพริกเกลือ', price:65, cat:'แนะนำ', types:[] },
-  { id:13, name:'คอกหอมผัดตับ',         price:55, cat:'แนะนำ',  types:[] },
-  { id:14, name:'กะเพราปลาดุก',         price:55, cat:'แนะนำ',  types:[] },
-  { id:20, name:'ผัดกะเพรา', price:65, cat:'จานด่วน',
-    types:['หมูกรอบ','หมู','ไก่','เนื้อ','ตับ','ทะเล'],
-    prices:{หมูกรอบ:65,หมู:50,ไก่:50,เนื้อ:60,ตับ:55,ทะเล:65} },
-  { id:21, name:'ผัดพริกแกง', price:60, cat:'จานด่วน',
-    types:['หมูกรอบ','หมู','ไก่','เนื้อ','ตับ','ทะเล'],
-    prices:{หมูกรอบ:60,หมู:50,ไก่:50,เนื้อ:60,ตับ:55,ทะเล:65}, sub:'ถั่วฝักยาว/หน่อไม้ดอง' },
-  { id:22, name:'ข้าวราดทอดกระเทียม', price:65, cat:'จานด่วน',
-    types:['หมูกรอบ','หมู','ไก่','เนื้อ','ตับ','ทะเล'],
-    prices:{หมูกรอบ:65,หมู:50,ไก่:50,เนื้อ:60,ตับ:55,ทะเล:65} },
-  { id:23, name:'ผัดผัก', price:60, cat:'จานด่วน',
-    types:['หมูกรอบ','หมู','ไก่','เนื้อ','ตับ'],
-    prices:{หมูกรอบ:60,หมู:50,ไก่:50,เนื้อ:60,ตับ:55}, sub:'คะน้า/ผักบุ้ง/ผักกาดขาว/ถั่วฝักยาว/คอกหอม' },
-  { id:30, name:'ข้าวไข่เจียวหมูสับ',    price:40, cat:'อื่นๆ', types:[] },
-  { id:31, name:'ข้าวไข่เจียวทรงเครื่อง', price:40, cat:'อื่นๆ', types:[] },
-  { id:32, name:'ข้าวไข่เจียว 2 ฟอง',    price:30, cat:'อื่นๆ', types:[] },
-  { id:33, name:'ข้าวไข่ตาว 2 ฟอง',      price:30, cat:'อื่นๆ', types:[] },
-  { id:34, name:'ข้าวเปล่า',              price:10, cat:'อื่นๆ', types:[] },
-  { id:35, name:'สุกี้น้ำ/แห้ง หมู/ไก่', price:55, cat:'อื่นๆ', types:[] },
-  { id:36, name:'สุกี้น้ำ/แห้ง ทะเล',    price:65, cat:'อื่นๆ', types:[] },
-];
-
-let orderItems = [];
-let history = [];
-let orderIdCounter = 1;
-let selectedMenuId = null;
-let selectedType = null;
-let pasteQueue = [];
-let recentMenus = [];
-let btDevice = null, btCharacteristic = null;
-let selectedChannel = 'line';
-
-// ============================================================
-// STORAGE
-// ============================================================
-function loadStorage() {
-  try {
-    const s = localStorage.getItem('kraow_settings');
-    if (s) settings = {...settings, ...JSON.parse(s)};
-    const m = localStorage.getItem('kraow_menu');
-    if (m) menuData = JSON.parse(m);
-    const h = localStorage.getItem('kraow_history');
-    if (h) history = JSON.parse(h);
-    const id = localStorage.getItem('kraow_orderid');
-    if (id) orderIdCounter = parseInt(id);
-    const r = localStorage.getItem('kraow_recent');
-    if (r) recentMenus = JSON.parse(r);
-  } catch(e){}
-  if (settings.autoSpeak) document.getElementById('auto-speak-toggle')?.classList.add('on');
-}
-function saveStorage() {
-  try {
-    localStorage.setItem('kraow_settings', JSON.stringify(settings));
-    localStorage.setItem('kraow_menu', JSON.stringify(menuData));
-    localStorage.setItem('kraow_history', JSON.stringify(history));
-    localStorage.setItem('kraow_orderid', orderIdCounter);
-    localStorage.setItem('kraow_recent', JSON.stringify(recentMenus));
-  } catch(e){}
-}
-
-// ============================================================
-// CHANNEL
-// ============================================================
-function setChannel(ch, el) {
-  selectedChannel = ch;
-  document.querySelectorAll('.channel-btn').forEach(b => b.classList.remove('active'));
-  el.classList.add('active');
-}
-
-// ============================================================
-// PAGES
-// ============================================================
-function showPage(name) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.bottom-tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('page-'+name).classList.add('active');
-  const tab = document.getElementById('tab-'+name);
-  if (tab) tab.classList.add('active');
-  if (name==='menu')     renderMenuBrowser();
-  if (name==='history')  renderHistory();
-  if (name==='settings') renderSettings();
-  if (name==='cart')     renderReceipt();
-  if (name==='kitchen')  renderKitchen();
-}
-
-// ============================================================
-// SEARCH & SUGGEST
-// ============================================================
-function onMenuSearch(val) {
-  selectedMenuId = null; selectedType = null;
-  document.getElementById('type-row').style.display = 'none';
-  if (!val || val.length < 1) { hideSuggest(); return; }
-  const q = val.toLowerCase();
-  const matches = menuData.filter(m =>
-    m.name.toLowerCase().includes(q) ||
-    (m.cat && m.cat.includes(q)) ||
-    (m.sub && m.sub.includes(q))
-  ).slice(0,8);
-  showSuggest(matches, val);
-}
-function showSuggest(items, q) {
-  const box = document.getElementById('suggest-box');
-  if (!items.length) { box.style.display='none'; return; }
-  box.innerHTML = items.map(m => {
-    let priceStr = m.types && m.types.length > 0 ? Object.values(m.prices||{}).join('/') : m.price;
-    return `<div class="suggest-item" onclick="selectMenu(${m.id})">
-      <div>
-        <div>${highlight(m.name, q)}</div>
-        <div class="suggest-cat">${m.cat}${m.sub?' · '+m.sub:''}</div>
-      </div>
-      <span class="suggest-price">฿${priceStr}</span>
-    </div>`;
-  }).join('');
-  box.style.display = 'block';
-}
-function highlight(text, q) {
-  if (!q) return text;
-  const idx = text.toLowerCase().indexOf(q.toLowerCase());
-  if (idx<0) return text;
-  return text.slice(0,idx) + `<strong style="color:var(--gold)">${text.slice(idx,idx+q.length)}</strong>` + text.slice(idx+q.length);
-}
-function hideSuggest() { document.getElementById('suggest-box').style.display = 'none'; }
-
-function selectMenu(id) {
-  const m = menuData.find(x=>x.id===id);
-  if (!m) return;
-  selectedMenuId = id;
-  document.getElementById('item-search').value = m.name;
-  document.getElementById('chip-special')?.classList.remove('active');
-  hideSuggest();
-  if (m.types && m.types.length > 0) {
-    document.getElementById('type-row').style.display = 'flex';
-    renderTypeChips(m);
-    document.getElementById('item-price').value = '';
-  } else {
-    document.getElementById('type-row').style.display = 'none';
-    document.getElementById('item-price').value = m.price;
-    selectedType = null;
-  }
-  document.getElementById('item-qty').focus();
-}
-function renderTypeChips(m) {
-  document.getElementById('type-chips').innerHTML =
-    (m.types||[]).map(t => `<div class="chip" onclick="selectType('${t}',${m.id})">${t}</div>`).join('');
-}
-function selectType(type, mid) {
-  selectedType = type;
-  const m = menuData.find(x=>x.id===mid);
-  let newPrice = m ? m.price : 0;
-  if (m && m.prices && m.prices[type]) newPrice = m.prices[type];
-  const isSpecial = document.getElementById('chip-special')?.classList.contains('active');
-  if (isSpecial) newPrice += 10;
-  document.getElementById('item-price').value = newPrice;
-  document.querySelectorAll('.chip').forEach(c => {
-    if (c.id !== 'chip-special') c.classList.toggle('active', c.textContent===type);
-  });
-}
-function toggleItemSpecial() {
-  const chip = document.getElementById('chip-special');
-  const priceInp = document.getElementById('item-price');
-  const noteInp = document.getElementById('item-note');
-  let p = parseFloat(priceInp.value);
-  chip.classList.toggle('active');
-  if (chip.classList.contains('active')) {
-    if (!isNaN(p)) priceInp.value = p + 10;
-    if (!noteInp.value.includes('พิเศษ')) noteInp.value = (noteInp.value + ' พิเศษ').trim();
-  } else {
-    if (!isNaN(p)) priceInp.value = Math.max(0, p - 10);
-    noteInp.value = noteInp.value.replace('พิเศษ','').trim();
-  }
-}
-function toggleListSpecial(id) {
-  const item = orderItems.find(x=>x.id===id);
-  if (!item) return;
-  item.isSpecial = !item.isSpecial;
-  if (item.isSpecial) {
-    item.price += 10;
-    if (!(item.note||'').includes('พิเศษ')) item.note = ((item.note||'') + ' พิเศษ').trim();
-  } else {
-    item.price = Math.max(0, item.price - 10);
-    item.note = (item.note||'').replace('พิเศษ','').trim();
-  }
-  renderOrderList(); updateCartBadge();
-}
-
-// ============================================================
-// PASTE
-// ============================================================
-function handlePaste(e) {
-  const text = (e.clipboardData || window.clipboardData).getData('text');
-  if (!text) return;
-  e.preventDefault();
-  let splitChar = '\n';
-  if (text.includes(',') && !text.includes('\n')) splitChar = ',';
-  const lines = text.split(splitChar).map(l=>l.trim()).filter(l=>l.length>0);
-  parsePasteLines(lines);
-}
-function parsePasteLines(lines) {
-  pasteQueue = [];
-  const preview = document.getElementById('paste-items');
-  const previewBox = document.getElementById('paste-preview');
-  preview.innerHTML = '';
-  for (const line of lines) {
-    const parsed = parseOrderLine(line);
-    if (parsed && parsed.name) {
-      pasteQueue.push(parsed);
-      preview.innerHTML += `<div class="order-item">
-        <div style="flex:1">
-          <div class="item-name">${parsed.name}${parsed.type?' ('+parsed.type+')':''}</div>
-          <div class="item-note">${parsed.note||''}</div>
+    <div class="container">
+        <div class="header">
+            <h1>🗣️ อ่านออเดอร์ครัว</h1>
         </div>
-        <div class="item-qty"><span class="qty-num">${parsed.qty}</span></div>
-        <div class="item-price">฿${parsed.price * parsed.qty}</div>
-      </div>`;
-    }
-  }
-  if (pasteQueue.length > 0) {
-    previewBox.style.display = 'block';
-    showToast(`📋 พบ ${pasteQueue.length} รายการจากคัดลอก`);
-    document.getElementById('item-search').value = '';
-  } else {
-    document.getElementById('item-search').value = lines.join(', ');
-  }
-}
-function parseOrderLine(line) {
-  // รูปแบบ: "ชื่อเมนู x2 หมายเหตุ" หรือ "1. กะเพรา (หมู) x3"
-  line = line.replace(/^\d+[\.\)]\s*/, '').trim();
-  const qtyMatch = line.match(/[xX×\*]\s*(\d+)/);
-  let qty = qtyMatch ? parseInt(qtyMatch[1]) : 1;
-  let name = line.replace(/[xX×\*]\s*\d+/, '').trim();
-  let type = null, note = '';
-  const typeMatch = name.match(/\(([^)]+)\)/);
-  if (typeMatch) { type = typeMatch[1]; name = name.replace(typeMatch[0],'').trim(); }
-  const dashMatch = name.match(/[-–]\s*(.+)/);
-  if (dashMatch) { note = dashMatch[1].trim(); name = name.replace(dashMatch[0],'').trim(); }
-  const found = menuData.find(m => m.name.toLowerCase().includes(name.toLowerCase()) || name.toLowerCase().includes(m.name.toLowerCase()));
-  let price = found ? found.price : 0;
-  if (found && type && found.prices && found.prices[type]) price = found.prices[type];
-  return { name: found ? found.name : name, type, qty, price, note };
-}
-function confirmPaste() {
-  pasteQueue.forEach(p => {
-    orderItems.push({ ...p, id: Date.now() + Math.random() });
-  });
-  pasteQueue = [];
-  document.getElementById('paste-preview').style.display = 'none';
-  renderOrderList(); updateCartBadge();
-  showToast('✅ เพิ่มรายการเรียบร้อย');
-}
-function cancelPaste() {
-  pasteQueue = [];
-  document.getElementById('paste-preview').style.display = 'none';
-}
 
-// ============================================================
-// ADD ITEM
-// ============================================================
-function addItem() {
-  const name  = document.getElementById('item-search').value.trim();
-  const qty   = parseInt(document.getElementById('item-qty').value) || 1;
-  const note  = document.getElementById('item-note').value.trim();
-  const price = parseFloat(document.getElementById('item-price').value) || 0;
-  if (!name) { showToast('⚠️ กรุณาใส่ชื่อเมนู', true); return; }
-  const item = { id: Date.now(), name, type: selectedType, qty, note, price, isSpecial: false };
-  orderItems.push(item);
-  // update recent
-  if (!recentMenus.includes(name)) { recentMenus.unshift(name); recentMenus = recentMenus.slice(0,5); }
-  // reset
-  document.getElementById('item-search').value = '';
-  document.getElementById('item-qty').value = '1';
-  document.getElementById('item-note').value = '';
-  document.getElementById('item-price').value = '';
-  document.getElementById('type-row').style.display = 'none';
-  document.getElementById('chip-special').classList.remove('active');
-  selectedMenuId = null; selectedType = null;
-  hideSuggest();
-  renderOrderList(); updateCartBadge();
-  renderRecentTags();
-  saveStorage();
-  showToast(`✅ เพิ่ม ${name} แล้ว`);
-}
+        <textarea id="orderText" class="text-box" placeholder="วางออเดอร์ที่คัดลอกมาลงที่นี่..."></textarea>
 
-// ============================================================
-// ORDER LIST RENDER
-// ============================================================
-function renderOrderList() {
-  const el = document.getElementById('order-list');
-  if (!orderItems.length) {
-    el.innerHTML = `<div class="empty-state"><div class="empty-icon">🍽️</div><div class="empty-text">ยังไม่มีรายการ<br>พิมพ์หรือวางออเดอร์เพื่อเริ่มต้น</div></div>`;
-    return;
-  }
-  el.innerHTML = `<div class="order-card">${orderItems.map((item,i) => `
-    <div class="order-item">
-      <div style="flex:1">
-        <div class="item-name">${i+1}. ${item.name}${item.type?` <span class="item-type">(${item.type})</span>`:''}</div>
-        ${item.note?`<div class="item-note">📝 ${item.note}</div>`:''}
-      </div>
-      <div class="item-qty">
-        <button class="qty-btn" onclick="changeQty(${item.id},-1)">−</button>
-        <span class="qty-num">${item.qty}</span>
-        <button class="qty-btn" onclick="changeQty(${item.id},1)">+</button>
-      </div>
-      <div class="item-price">฿${item.price * item.qty}</div>
-      <button class="del-btn" onclick="removeItem(${item.id})">✕</button>
-    </div>`).join('')}
-  </div>
-  <div style="display:flex;justify-content:flex-end;padding:8px 0;gap:8px">
-    <button class="clear-btn" onclick="clearOrder()">🗑️ ล้างทั้งหมด</button>
-    <div style="font-family:'Prompt';font-size:18px;font-weight:700;color:var(--gold-light)">
-      รวม ฿${orderItems.reduce((s,i)=>s+i.price*i.qty,0)}
+        <div class="toolbar">
+            <button class="btn btn-paste" onclick="pasteFromClipboard()">
+                📋 วางข้อความ
+            </button>
+            <button class="btn btn-clear" onclick="clearText()">
+                🗑️ ล้าง
+            </button>
+        </div>
+
+        <div class="settings">
+            <label for="speedRate">🏃 ความเร็ว:</label>
+            <input type="range" id="speedRate" min="0.5" max="1.5" step="0.1" value="0.9">
+            <span id="speedValue">0.9x</span>
+        </div>
+
+        <div class="play-container">
+            <button id="playBtn" class="btn btn-play" onclick="toggleSpeech()">
+                ▶️ อ่านออกเสียง
+            </button>
+        </div>
     </div>
-  </div>`;
-}
-function changeQty(id, delta) {
-  const item = orderItems.find(x=>x.id===id);
-  if (!item) return;
-  item.qty = Math.max(1, item.qty + delta);
-  renderOrderList(); updateCartBadge();
-}
-function removeItem(id) {
-  orderItems = orderItems.filter(x=>x.id!==id);
-  renderOrderList(); updateCartBadge();
-}
-function clearOrder() {
-  if (!confirm('ล้างออเดอร์ทั้งหมด?')) return;
-  orderItems = [];
-  renderOrderList(); updateCartBadge();
-}
-function updateCartBadge() {
-  const badge = document.getElementById('cart-badge');
-  const total = orderItems.reduce((s,i)=>s+i.qty,0);
-  badge.textContent = total;
-  badge.style.display = total > 0 ? 'flex' : 'none';
-}
-function renderRecentTags() {
-  const el = document.getElementById('recent-tags');
-  el.innerHTML = recentMenus.map(n =>
-    `<div class="tag" onclick="quickAddRecent('${n}')" style="cursor:pointer">${n}</div>`
-  ).join('');
-}
-function quickAddRecent(name) {
-  document.getElementById('item-search').value = name;
-  onMenuSearch(name);
-}
 
-// ============================================================
-// MENU BROWSER
-// ============================================================
-let currentCat = 'ทั้งหมด';
-function renderMenuBrowser() {
-  const cats = ['ทั้งหมด', ...new Set(menuData.map(m=>m.cat))];
-  document.getElementById('cat-tabs').innerHTML = cats.map(c =>
-    `<div class="cat-tab ${c===currentCat?'active':''}" onclick="filterCat('${c}')">${c}</div>`
-  ).join('');
-  const filtered = currentCat==='ทั้งหมด' ? menuData : menuData.filter(m=>m.cat===currentCat);
-  document.getElementById('menu-grid').innerHTML = filtered.map(m => `
-    <div class="menu-card" onclick="quickAddMenu(${m.id})">
-      <div class="add-icon">+</div>
-      <div class="menu-card-name">${m.name}</div>
-      <div class="menu-card-cat">${m.cat}</div>
-      <div class="menu-card-price">฿${m.price}</div>
-      ${m.types&&m.types.length?`<div class="menu-card-multi">${m.types.join(' / ')}</div>`:''}
-    </div>`).join('');
-}
-function filterCat(cat) { currentCat = cat; renderMenuBrowser(); }
-function quickAddMenu(id) {
-  showPage('order');
-  selectMenu(id);
-}
+    <div id="toast" class="toast"></div>
 
-// ============================================================
-// RECEIPT
-// ============================================================
-function renderReceipt() {
-  const channelMap = { line:'💬 ไลน์', phone:'📞 โทรศัพท์', walkin:'🏪 หน้าร้าน' };
-  document.getElementById('rcpt-table').textContent = channelMap[selectedChannel] || selectedChannel;
-  document.getElementById('rcpt-customer').textContent = document.getElementById('customer-name').value || '-';
-  document.getElementById('rcpt-time').textContent = new Date().toLocaleTimeString('th-TH');
-  document.getElementById('rcpt-id').textContent = '#' + String(orderIdCounter).padStart(4,'0');
-  const subtotal = orderItems.reduce((s,i)=>s+i.price*i.qty,0);
-  document.getElementById('rcpt-subtotal').textContent = '฿' + subtotal;
-  document.getElementById('rcpt-items').innerHTML = orderItems.map((item,i) => `
-    <div style="display:flex;justify-content:space-between;padding:4px 0;font-size:13px;border-bottom:1px solid var(--border)">
-      <div>${i+1}. ${item.name}${item.type?' ('+item.type+')':''} × ${item.qty}${item.note?' <span style="color:var(--text2);font-size:11px">'+item.note+'</span>':''}</div>
-      <div style="color:var(--gold);font-weight:700">฿${item.price*item.qty}</div>
-    </div>`).join('');
-  calcTotal();
-}
-function calcTotal() {
-  const subtotal = orderItems.reduce((s,i)=>s+i.price*i.qty,0);
-  const discount = parseFloat(document.getElementById('discount-inp').value)||0;
-  const extra    = parseFloat(document.getElementById('extra-inp').value)||0;
-  const total = subtotal - discount + extra;
-  document.getElementById('rcpt-total').textContent = '฿' + total;
-  document.getElementById('discount-show').textContent = discount > 0 ? '-฿'+discount : '';
-  document.getElementById('extra-show').textContent    = extra > 0 ? '+฿'+extra : '';
-  calcChange();
-}
-function calcChange() {
-  const total = parseFloat(document.getElementById('rcpt-total').textContent.replace('฿',''))||0;
-  const cash  = parseFloat(document.getElementById('cash-inp').value)||0;
-  document.getElementById('change-show').textContent = cash >= total ? '฿'+(cash-total) : '-';
-}
+    <script>
+        const textInput = document.getElementById('orderText');
+        const playBtn = document.getElementById('playBtn');
+        const speedRate = document.getElementById('speedRate');
+        const speedValue = document.getElementById('speedValue');
+        
+        let synth = window.speechSynthesis;
+        let isSpeaking = false;
 
-// ============================================================
-// SAVE ORDER
-// ============================================================
-function saveOrder() {
-  if (!orderItems.length) { showToast('⚠️ ยังไม่มีรายการ', true); return; }
-  const subtotal  = orderItems.reduce((s,i)=>s+i.price*i.qty,0);
-  const discount  = parseFloat(document.getElementById('discount-inp').value)||0;
-  const extra     = parseFloat(document.getElementById('extra-inp').value)||0;
-  const total     = subtotal - discount + extra;
-  const record = {
-    id: orderIdCounter++,
-    channel: selectedChannel,
-    customer: document.getElementById('customer-name').value || '-',
-    items: [...orderItems],
-    subtotal, discount, extra, total,
-    time: new Date().toLocaleString('th-TH')
-  };
-  history.unshift(record);
-  if (history.length > 100) history.pop();
-  saveStorage();
-  showToast('✅ บันทึกออเดอร์ #'+record.id+' แล้ว');
-  if (settings.autoSheet && settings.sheetUrl) saveToSheet(record);
-}
+        // อัพเดทตัวเลขความเร็ว
+        speedRate.addEventListener('input', function() {
+            speedValue.textContent = this.value + 'x';
+        });
 
-// ============================================================
-// GOOGLE SHEET
-// ============================================================
-async function saveToSheet(record) {
-  const url = settings.sheetUrl;
-  if (!url) { showToast('⚠️ ยังไม่ได้ตั้งค่า Google Sheet URL', true); return; }
-  const statusEl = document.getElementById('sheet-status-row');
-  statusEl.innerHTML = '<span class="sheet-status pending">⏳ กำลังบันทึก...</span>';
-  const rec = record || {
-    id: orderIdCounter, channel: selectedChannel,
-    customer: document.getElementById('customer-name').value || '-',
-    items: orderItems, total: parseFloat(document.getElementById('rcpt-total').textContent.replace('฿',''))||0,
-    time: new Date().toLocaleString('th-TH')
-  };
-  const itemStr = rec.items.map(i=>`${i.name}${i.type?' ('+i.type+')':''} x${i.qty}`).join(', ');
-  const payload = { sheetName: settings.sheetName, orderId: rec.id, channel: rec.channel,
-    customer: rec.customer, items: itemStr, total: rec.total, time: rec.time };
-  try {
-    await fetch(url, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
-    statusEl.innerHTML = '<span class="sheet-status ok">✅ บันทึก Sheet แล้ว</span>';
-  } catch(e) {
-    statusEl.innerHTML = '<span class="sheet-status err">❌ บันทึก Sheet ไม่สำเร็จ</span>';
-  }
-}
+        // ฟังก์ชันล้างข้อความ
+        function clearText() {
+            textInput.value = '';
+            stopSpeech();
+            textInput.focus();
+        }
 
-// ============================================================
-// PREVIEW & PRINT
-// ============================================================
-function buildReceiptHTML() {
-  const subtotal = orderItems.reduce((s,i)=>s+i.price*i.qty,0);
-  const discount = parseFloat(document.getElementById('discount-inp')?.value)||0;
-  const extra    = parseFloat(document.getElementById('extra-inp')?.value)||0;
-  const total    = subtotal - discount + extra;
-  const channelMap = { line:'ไลน์', phone:'โทรศัพท์', walkin:'หน้าร้าน' };
-  const customer = document.getElementById('customer-name')?.value || '';
-  let html = `<div style="text-align:center;margin-bottom:10px">`;
-  if (settings.logoUrl) html += `<img src="${settings.logoUrl}" style="max-width:80px;max-height:80px;margin-bottom:6px"><br>`;
-  html += `<strong style="font-size:18px">${settings.shopname}</strong><br>`;
-  html += `โทร. ${settings.phone} | Line: ${settings.line}<br>`;
-  html += `<span style="font-size:11px">${new Date().toLocaleString('th-TH')}</span>`;
-  if (customer) html += `<br><span style="font-size:12px">ลูกค้า: ${customer} (${channelMap[selectedChannel]})</span>`;
-  html += `</div><hr style="border:1px dashed #999;margin:8px 0">`;
-  orderItems.forEach((item,i) => {
-    html += `<div style="display:flex;justify-content:space-between;margin-bottom:4px">
-      <div>${settings.showNum?i+1+'. ':''}${item.name}${item.type?' ('+item.type+')':''} × ${item.qty}</div>
-      <div>฿${item.price*item.qty}</div></div>`;
-    if (item.note) html += `<div style="font-size:11px;color:#666;margin-left:10px;margin-bottom:4px">📝 ${item.note}</div>`;
-  });
-  html += `<hr style="border:1px dashed #999;margin:8px 0">`;
-  html += `<div style="display:flex;justify-content:space-between"><div>ยอดรวม</div><div>฿${subtotal}</div></div>`;
-  if (discount > 0) html += `<div style="display:flex;justify-content:space-between"><div>ส่วนลด</div><div>-฿${discount}</div></div>`;
-  if (extra > 0)    html += `<div style="display:flex;justify-content:space-between"><div>จ่ายเพิ่ม</div><div>+฿${extra}</div></div>`;
-  html += `<div style="display:flex;justify-content:space-between;font-size:18px;font-weight:bold;margin-top:6px">
-    <div>ยอดสุทธิ</div><div>฿${total}</div></div>`;
-  if (settings.promptpay) html += `<div style="text-align:center;margin-top:8px;font-size:12px">PromptPay: ${settings.promptpay}</div>`;
-  if (settings.qrCode) html += `<div style="text-align:center;margin:8px 0">
-    <img src="https://promptpay.io/${settings.promptpay}/${total}.png" style="width:120px;height:120px" onerror="this.style.display='none'">
-  </div>`;
-  html += `<hr style="border:1px dashed #999;margin:8px 0">`;
-  html += `<div style="text-align:center;font-size:12px">${settings.footer}</div>`;
-  return html;
-}
-function showPreview() {
-  if (!orderItems.length) { showToast('⚠️ ยังไม่มีรายการ', true); return; }
-  const receiptHTML = buildReceiptHTML();
-  document.getElementById('receipt-content-to-capture').innerHTML = receiptHTML;
-  const previewContent = document.getElementById('preview-content');
-  previewContent.innerHTML = '<div style="color:#333;font-size:13px">กำลังสร้างภาพ...</div>';
-  document.getElementById('preview-modal').classList.add('open');
-  setTimeout(() => {
-    html2canvas(document.getElementById('receipt-content-to-capture'), { scale:2, useCORS:true, backgroundColor:'#ffffff' }).then(canvas => {
-      previewContent.innerHTML = '';
-      previewContent.appendChild(canvas);
-      canvas.style.maxWidth = '100%';
-    }).catch(() => {
-      previewContent.innerHTML = `<div style="background:#fff;padding:16px;color:#000;font-size:13px">${receiptHTML}</div>`;
-    });
-  }, 100);
-}
-function closePreview() { document.getElementById('preview-modal').classList.remove('open'); }
-async function executePrintImage() {
-  if (!btCharacteristic) { showToast('⚠️ ยังไม่ได้เชื่อมต่อ Bluetooth', true); return; }
-  showToast('🖨️ กำลังพิมพ์...');
-  closePreview();
-}
+        // ฟังก์ชันดึงข้อความจาก Clipboard (ใช้ได้ดีในมือถือและ https)
+        async function pasteFromClipboard() {
+            try {
+                const text = await navigator.clipboard.readText();
+                if (text) {
+                    textInput.value = text;
+                    showToast('✅ วางข้อความแล้ว');
+                } else {
+                    showToast('⚠️ ไม่มีข้อความในคลิปบอร์ด');
+                }
+            } catch (err) {
+                // กรณีเบราว์เซอร์ไม่อนุญาต หรือเป็น http ธรรมดา
+                showToast('แตะค้างที่กล่องข้อความแล้วเลือก "วาง" (Paste)');
+            }
+        }
 
-// ============================================================
-// HISTORY
-// ============================================================
-function renderHistory() {
-  const el = document.getElementById('history-list');
-  if (!history.length) {
-    el.innerHTML = `<div class="empty-state"><div class="empty-icon">📜</div><div class="empty-text">ยังไม่มีประวัติออเดอร์</div></div>`;
-    return;
-  }
-  el.innerHTML = history.map(rec => {
-    const channelMap = { line:'💬 ไลน์', phone:'📞 โทรศัพท์', walkin:'🏪 หน้าร้าน' };
-    return `<div class="hist-card">
-      <div class="hist-header">
-        <div>
-          <div class="hist-table">#${rec.id} ${rec.customer}</div>
-          <div class="hist-time">${rec.time} · ${channelMap[rec.channel]||rec.channel}</div>
-        </div>
-        <div class="hist-total">฿${rec.total}</div>
-      </div>
-      <div class="hist-items">${rec.items.map(i=>`${i.name}${i.type?' ('+i.type+')':''} ×${i.qty} ฿${i.price*i.qty}`).join('<br>')}</div>
-      <div class="hist-actions">
-        <button class="hist-btn" onclick="reloadOrder(${rec.id})">🔁 โหลดซ้ำ</button>
-        <button class="hist-btn" onclick="copyHistOrder(${rec.id})">📋 คัดลอก</button>
-        <button class="hist-btn danger" onclick="deleteHist(${rec.id})">🗑️ ลบ</button>
-      </div>
-    </div>`;
-  }).join('');
-}
-function reloadOrder(id) {
-  const rec = history.find(h=>h.id===id);
-  if (!rec) return;
-  orderItems = rec.items.map(i=>({...i, id:Date.now()+Math.random()}));
-  renderOrderList(); updateCartBadge();
-  showPage('order');
-  showToast('✅ โหลดออเดอร์ #'+id+' แล้ว');
-}
-function copyHistOrder(id) {
-  const rec = history.find(h=>h.id===id);
-  if (!rec) return;
-  const lines = [`🍳 ออเดอร์ #${rec.id} - ${rec.customer}`, `🕐 ${rec.time}`, '─'.repeat(20)];
-  rec.items.forEach((item,i) => {
-    lines.push(`${i+1}. ${item.name}${item.type?' ('+item.type+')':''} × ${item.qty} = ฿${item.price*item.qty}`);
-  });
-  lines.push('─'.repeat(20));
-  lines.push(`💰 รวม: ฿${rec.total}`);
-  copyToClipboard(lines.join('\n'));
-}
-function deleteHist(id) {
-  if (!confirm('ลบออเดอร์ #'+id+' ?')) return;
-  history = history.filter(h=>h.id!==id);
-  saveStorage(); renderHistory();
-}
+        // ----------------------------------------------------
+        // ฟังก์ชันสำคัญ: ทำความสะอาดข้อความให้อ่านง่ายขึ้น
+        // ----------------------------------------------------
+        function cleanTextForSpeech(rawText) {
+            let lines = rawText.split('\n');
+            let speechParts = [];
 
-// ============================================================
-// SETTINGS
-// ============================================================
-function renderSettings() {
-  document.getElementById('s-shopname').value = settings.shopname;
-  document.getElementById('s-phone').value    = settings.phone;
-  document.getElementById('s-line').value     = settings.line;
-  document.getElementById('s-footer').value   = settings.footer;
-  document.getElementById('s-sheet-url').value  = settings.sheetUrl;
-  document.getElementById('s-sheet-name').value = settings.sheetName;
-  document.getElementById('s-promptpay').value  = settings.promptpay;
-  document.getElementById('s-logourl').value    = settings.logoUrl || '';
-  if (settings.autoSheet) document.getElementById('auto-sheet-toggle').classList.add('on');
-  if (!settings.qrCode)   document.getElementById('qr-toggle').classList.remove('on');
-  if (!settings.showNum)  document.getElementById('num-toggle').classList.remove('on');
-  renderMenuCatList();
-}
-function saveSettings() {
-  settings.shopname  = document.getElementById('s-shopname').value;
-  settings.phone     = document.getElementById('s-phone').value;
-  settings.line      = document.getElementById('s-line').value;
-  settings.footer    = document.getElementById('s-footer').value;
-  settings.sheetUrl  = document.getElementById('s-sheet-url').value;
-  settings.sheetName = document.getElementById('s-sheet-name').value;
-  settings.promptpay = document.getElementById('s-promptpay').value;
-  settings.logoUrl   = document.getElementById('s-logourl').value;
-  settings.autoSheet = document.getElementById('auto-sheet-toggle').classList.contains('on');
-  settings.qrCode    = document.getElementById('qr-toggle').classList.contains('on');
-  settings.showNum   = document.getElementById('num-toggle').classList.contains('on');
-  document.getElementById('nav-sub').textContent = 'โทร. ' + settings.phone;
-  saveStorage();
-  showToast('✅ บันทึกการตั้งค่าแล้ว');
-}
-function renderMenuCatList() {
-  const cats = [...new Set(menuData.map(m=>m.cat))];
-  document.getElementById('menu-cat-list').innerHTML = cats.map(cat => {
-    const items = menuData.filter(m=>m.cat===cat);
-    return `<div>
-      <div class="settings-header">${cat}</div>
-      ${items.map(m => `<div class="menu-edit-item">
-        <div class="menu-edit-name">${m.name}</div>
-        <div class="menu-edit-price">฿${m.price}</div>
-        <button class="menu-del-btn" onclick="deleteMenu(${m.id})">✕</button>
-      </div>`).join('')}
-    </div>`;
-  }).join('');
-}
-function deleteMenu(id) {
-  menuData = menuData.filter(m=>m.id!==id);
-  saveStorage(); renderMenuCatList();
-}
-function addMenuManual() {
-  const name  = document.getElementById('new-menu-name').value.trim();
-  const price = parseFloat(document.getElementById('new-menu-price').value)||0;
-  const cat   = document.getElementById('new-menu-cat').value;
-  if (!name) return;
-  menuData.push({ id: Date.now(), name, price, cat, types:[] });
-  document.getElementById('new-menu-name').value  = '';
-  document.getElementById('new-menu-price').value = '';
-  saveStorage(); renderMenuCatList();
-  showToast('✅ เพิ่มเมนู '+name+' แล้ว');
-}
+            for (let line of lines) {
+                line = line.trim();
+                
+                // ข้ามบรรทัดที่ไม่จำเป็นต้องอ่าน (หัวบิล, ขีดคั่น, ฯลฯ)
+                if (!line || 
+                    line.startsWith('🍳') || 
+                    line.startsWith('👤') || 
+                    line.startsWith('🕐') || 
+                    line.startsWith('─') || 
+                    line.startsWith('💰')) {
+                    continue;
+                }
 
-// ============================================================
-// BLUETOOTH
-// ============================================================
-async function connectBluetooth() {
-  if (!navigator.bluetooth) { showToast('⚠️ เบราว์เซอร์นี้ไม่รองรับ Bluetooth', true); return; }
-  try {
-    btDevice = await navigator.bluetooth.requestDevice({ acceptAllDevices:true, optionalServices:['000018f0-0000-1000-8000-00805f9b34fb'] });
-    const server = await btDevice.gatt.connect();
-    const service = await server.getPrimaryService('000018f0-0000-1000-8000-00805f9b34fb');
-    btCharacteristic = await service.getCharacteristic('00002af1-0000-1000-8000-00805f9b34fb');
-    document.getElementById('bt-status').textContent = '🟢 เชื่อมต่อ: ' + btDevice.name;
-    document.getElementById('bt-connect-btn').style.display = 'none';
-    document.getElementById('bt-disconnect-btn').style.display = 'flex';
-    showToast('✅ เชื่อมต่อ Bluetooth สำเร็จ');
-  } catch(e) { showToast('❌ ไม่สามารถเชื่อมต่อได้: ' + e.message, true); }
-}
-function disconnectBluetooth() {
-  if (btDevice && btDevice.gatt.connected) btDevice.gatt.disconnect();
-  btDevice = null; btCharacteristic = null;
-  document.getElementById('bt-status').textContent = '⚪ ยังไม่ได้เชื่อมต่อ';
-  document.getElementById('bt-connect-btn').style.display = 'flex';
-  document.getElementById('bt-disconnect-btn').style.display = 'none';
-  showToast('ตัดการเชื่อมต่อ Bluetooth แล้ว');
-}
+                // แปลงรูปแบบ "1. กะเพราหมูกรอบ × 2" -> "รายการที่ 1 กะเพราหมูกรอบ 2 ที่"
+                line = line.replace(/^(\d+)\.\s*/, 'รายการที่ $1, ');
+                line = line.replace(/[×xX]\s*(\d+)/, '$1 ที่');
+                
+                // แปลงหมายเหตุ
+                line = line.replace('📝', 'หมายเหตุ');
+                
+                // ลบวงเล็บออกเพื่อให้อ่านลื่นขึ้น
+                line = line.replace(/\(/g, ' ').replace(/\)/g, ' ');
 
-// ============================================================
-// SPEAK (TTS)
-// ============================================================
-function toggleAutoSpeak(el) {
-  el.classList.toggle('on');
-  settings.autoSpeak = el.classList.contains('on');
-  saveStorage();
-}
-function speakItem(item) {
-  if (!settings.autoSpeak || !window.speechSynthesis) return;
-  const text = `${item.name}${item.type?' '+item.type:''} จำนวน ${item.qty} ${item.note?'หมายเหตุ '+item.note:''}`;
-  const utter = new SpeechSynthesisUtterance(text);
-  utter.lang = 'th-TH'; utter.rate = 0.9;
-  window.speechSynthesis.cancel();
-  window.speechSynthesis.speak(utter);
-}
+                speechParts.push(line);
+            }
 
-// ============================================================
-// ==================== KITCHEN PAGE ==========================
-// ============================================================
-function renderKitchen() {
-  const container  = document.getElementById('kitchen-items');
-  const copyAllBtn = document.getElementById('copy-all-btn');
+            // ถ้าระบบตัดจนไม่เหลืออะไรเลย (เช่น พิมพ์มาเองไม่ได้ก๊อปจากแอป) ให้ใช้อ่านดิบๆ
+            if (speechParts.length === 0 && rawText.trim() !== '') {
+                return rawText;
+            }
 
-  if (!orderItems || orderItems.length === 0) {
-    container.innerHTML = `
-      <div class="empty-state">
-        <div class="empty-icon">🍽️</div>
-        <div class="empty-text">ยังไม่มีออเดอร์ในคิว<br>รับออเดอร์ที่หน้า "รับออเดอร์" ก่อนนะคะ</div>
-      </div>`;
-    if (copyAllBtn) copyAllBtn.style.display = 'none';
-    return;
-  }
+            // เชื่อมประโยคพร้อมเว้นวรรค
+            return speechParts.join('. '); 
+        }
 
-  if (copyAllBtn) copyAllBtn.style.display = 'flex';
+        // ควบคุมการอ่าน
+        function toggleSpeech() {
+            if (synth.speaking) {
+                stopSpeech();
+                return;
+            }
 
-  container.innerHTML = orderItems.map((item, idx) => `
-    <div class="kitchen-card">
-      <!-- หัวการ์ด: เลขลำดับ -->
-      <div style="display:flex;justify-content:flex-start;align-items:center;margin-bottom:10px;">
-        <div style="background:var(--gold);color:var(--dark);border-radius:20px;
-                    padding:3px 14px;font-size:14px;font-weight:700;font-family:'Prompt',sans-serif;">
-          #${idx + 1}
-        </div>
-      </div>
+            const rawText = textInput.value.trim();
+            if (!rawText) {
+                showToast('⚠️ กรุณาใส่ข้อความก่อน');
+                textInput.focus();
+                return;
+            }
 
-      <!-- ชื่อเมนู -->
-      <div style="font-family:'Prompt',sans-serif;font-size:28px;font-weight:700;
-                  color:var(--text);text-align:center;margin-bottom:4px;line-height:1.3;">
-        ${item.name}
-        ${item.type ? `<span style="color:var(--orange);font-size:20px;"> (${item.type})</span>` : ''}
-      </div>
+            const textToSpeak = cleanTextForSpeech(rawText);
+            
+            const utterance = new SpeechSynthesisUtterance(textToSpeak);
+            utterance.lang = 'th-TH'; // ภาษาไทย
+            utterance.rate = parseFloat(speedRate.value); // ความเร็ว
+            
+            // เปลี่ยน UI เป็นสถานะกำลังอ่าน
+            utterance.onstart = () => {
+                isSpeaking = true;
+                playBtn.innerHTML = '⏹️ หยุดอ่าน';
+                playBtn.classList.add('playing');
+            };
 
-      <!-- จำนวน -->
-      <div class="kitchen-qty">× ${item.qty}</div>
+            // เมื่ออ่านจบ กลับสู่ปกติ
+            utterance.onend = () => {
+                resetUI();
+            };
 
-      <!-- หมายเหตุ -->
-      ${item.note ? `
-        <div style="background:rgba(230,126,34,0.15);border:1px solid rgba(230,126,34,0.4);
-                    border-radius:8px;padding:8px 12px;margin-top:8px;text-align:center;
-                    color:var(--orange);font-size:16px;font-weight:600;">
-          📝 ${item.note}
-        </div>` : ''}
+            // กรณีเกิดข้อผิดพลาด
+            utterance.onerror = (e) => {
+                console.error("Speech error:", e);
+                resetUI();
+            };
 
+            synth.speak(utterance);
+        }
 
+        function stopSpeech() {
+            synth.cancel();
+            resetUI();
+        }
 
-      <!-- ปุ่มทำเสร็จ / อ่านออกเสียง -->
-      <div style="display:flex;gap:10px;margin-top:14px;">
-        <button onclick="speakItem(orderItems[${idx}])"
-          style="flex:1;padding:14px;background:var(--card);border:1px solid var(--border);
-                 color:var(--text2);border-radius:10px;font-size:18px;cursor:pointer;">
-          🔊 อ่านออกเสียง
-        </button>
-        <button onclick="doneKitchenItem(${item.id})"
-          style="flex:1;padding:14px;background:linear-gradient(135deg,var(--green),#1a7a40);
-                 border:none;color:#fff;border-radius:10px;font-size:18px;font-weight:700;cursor:pointer;
-                 font-family:'Prompt',sans-serif;">
-          ✅ ทำเสร็จ
-        </button>
-      </div>
-    </div>`).join('');
+        function resetUI() {
+            isSpeaking = false;
+            playBtn.innerHTML = '▶️ อ่านออกเสียง';
+            playBtn.classList.remove('playing');
+        }
 
-  // auto speak ออเดอร์ล่าสุด
-  if (settings.autoSpeak && orderItems.length > 0) {
-    speakItem(orderItems[orderItems.length - 1]);
-  }
-}
+        // ระบบแจ้งเตือน (Toast)
+        let toastTimeout;
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.add('show');
+            
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
 
-// ทำเสร็จแล้วลบออกจาก queue
-function doneKitchenItem(id) {
-  orderItems = orderItems.filter(x => x.id !== id);
-  renderOrderList();
-  updateCartBadge();
-  renderKitchen();
-  showToast('✅ เสร็จแล้ว! ลบออกจากคิว');
-}
-
-// ============================================================
-// ============== COPY FUNCTIONS ==============================
-// ============================================================
-
-// คัดลอกออเดอร์ทั้งหมดในครั้งเดียว
-function copyAllOrders() {
-  if (!orderItems || orderItems.length === 0) {
-    showToast('⚠️ ยังไม่มีออเดอร์', true);
-    return;
-  }
-  const channelMap = { line:'ไลน์', phone:'โทรศัพท์', walkin:'หน้าร้าน' };
-  const ch         = channelMap[selectedChannel] || selectedChannel;
-  const customer   = document.getElementById('customer-name')?.value || '';
-  const total      = orderItems.reduce((s,i)=>s+i.price*i.qty,0);
-
-  let lines = [];
-  lines.push(`🍳 ${settings.shopname} — ออเดอร์ครัว`);
-  if (customer) lines.push(`👤 ลูกค้า: ${customer} (${ch})`);
-  lines.push(`🕐 ${new Date().toLocaleTimeString('th-TH')}`);
-  lines.push('─'.repeat(26));
-
-  orderItems.forEach((item, idx) => {
-    let line = `${idx+1}. ${item.name}`;
-    if (item.type) line += ` (${item.type})`;
-    line += ` × ${item.qty}`;
-    if (item.note) line += `\n   📝 ${item.note}`;
-    lines.push(line);
-  });
-
-  lines.push('─'.repeat(26));
-
-  copyToClipboard(lines.join('\n'));
-
-  // visual feedback ปุ่ม
-  const btn = document.getElementById('copy-all-btn');
-  if (btn) {
-    btn.textContent = '✅ คัดลอกทั้งหมดแล้ว!';
-    btn.style.background = 'linear-gradient(135deg,var(--green),#1a7a40)';
-    setTimeout(() => {
-      btn.innerHTML = '📋 คัดลอกออเดอร์ทั้งหมด';
-      btn.style.background = 'linear-gradient(135deg,#1a5276,#0d2d45)';
-    }, 2000);
-  }
-}
-
-// core copy utility
-function copyToClipboard(text) {
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(text)
-      .then(() => showToast('✅ คัดลอกไปยังคลิปบอร์ดแล้ว!'))
-      .catch(() => fallbackCopy(text));
-  } else {
-    fallbackCopy(text);
-  }
-}
-function fallbackCopy(text) {
-  const ta = document.createElement('textarea');
-  ta.value = text;
-  ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0';
-  document.body.appendChild(ta);
-  ta.select();
-  try { document.execCommand('copy'); showToast('✅ คัดลอกแล้ว!'); }
-  catch(e) { showToast('❌ คัดลอกไม่ได้', true); }
-  document.body.removeChild(ta);
-}
-
-// ============================================================
-// TOAST
-// ============================================================
-let toastTimer = null;
-function showToast(msg, isError=false) {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.className = 'toast show' + (isError?' error':'');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
-}
-
-// ============================================================
-// INIT
-// ============================================================
-loadStorage();
-renderOrderList();
-updateCartBadge();
-renderRecentTags();
-document.getElementById('nav-sub').textContent = 'โทร. ' + settings.phone;
-
-// close suggest on outside click
-document.addEventListener('click', e => {
-  if (!e.target.closest('.inp-wrap')) hideSuggest();
-});
-</script>
+        // ป้องกันเสียงค้างตอนปิดหน้าเว็บ
+        window.addEventListener('beforeunload', () => {
+            if (synth.speaking) synth.cancel();
+        });
+    </script>
 </body>
 </html>
